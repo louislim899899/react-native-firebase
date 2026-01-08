@@ -41,3 +41,6 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Usually, we don't recommend uploading index.html file to git. Add coverage/**/* in the .gitignore file to prevent it from being tracked.
+coverage/**/*
