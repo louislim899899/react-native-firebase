@@ -1,0 +1,5 @@
+- multi role user
+- account deletion
+- custom backend auth system
+- offline authentication
+- change email
