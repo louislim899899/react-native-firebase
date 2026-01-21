@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { authService } from '../services';
-import { userService } from '../services';
-import { AuthSession, UserProfile, UserAppState } from '../models';
+import { useEffect, useState } from 'react';
+import { AuthSession, UserAppState, UserProfile } from '../models';
+import { authService, userService } from '../services';
 import { resolveUserAppState } from '../state';
 
 /**

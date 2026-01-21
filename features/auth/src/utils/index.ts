@@ -1,6 +1,7 @@
-export { mapFirebaseErrorToMessage, createContextualError } from './errorMapper';
+export { createContextualError, mapFirebaseErrorToMessage } from './errorMapper';
 export {
-  hasSeenIntroSlider,
-  markIntroSliderSeen,
-  resetFirstInstallFlag,
+    hasSeenIntroSlider,
+    markIntroSliderSeen,
+    resetFirstInstallFlag
 } from './firstInstallStorage';
+

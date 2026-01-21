@@ -1,25 +1,21 @@
-import { PropsWithChildren } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { UserProvider } from '@/features/auth/src';
+import { Stack } from 'expo-router';
 
-
-export const CustomText = ({ children }: PropsWithChildren) => <Text>{children}</Text>;
-
-
-
-export default function HomeScreen() {
+/**
+ * Root App Component
+ *
+ * Integrates the auth module's UserProvider for user context.
+ * Navigation is handled by Expo Router (app/_layout.tsx).
+ *
+ * UserProvider wraps the app to provide user context throughout.
+ *
+ * @see features/auth/src/state/UserProvider.tsx
+ * @see app/_layout.tsx
+ */
+export default function RootApp() {
   return (
-    <View style={styles.container}>
-      <CustomText>Welcome!</CustomText>
-    </View>
+    <UserProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </UserProvider>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

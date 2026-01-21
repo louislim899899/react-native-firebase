@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth, useUserState } from '../hooks';
 
 /**

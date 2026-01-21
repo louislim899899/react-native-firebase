@@ -1,11 +1,11 @@
 import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  Firestore,
+    doc,
+    Firestore,
+    getDoc,
+    setDoc,
+    updateDoc,
 } from 'firebase/firestore';
-import { db } from '../../../../config/firebase';
+import { getFirebaseDb } from '../../../../config/firebase';
 import { UserProfile } from '../models';
 
 /**
@@ -19,8 +19,8 @@ import { UserProfile } from '../models';
 class UserService {
   private dbInstance: Firestore;
 
-  constructor(dbInstance: Firestore) {
-    this.dbInstance = dbInstance;
+  constructor() {
+    this.dbInstance = getFirebaseDb();
   }
 
   /**
@@ -188,4 +188,4 @@ class UserService {
 }
 
 // Export singleton instance
-export const userService = new UserService(db);
+export const userService = new UserService();

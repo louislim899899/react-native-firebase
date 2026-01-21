@@ -1,8 +1,8 @@
 import {
-  createContext,
-  useContext,
+    createContext,
+    useContext,
 } from 'react';
-import { AuthSession, UserProfile, UserAppState } from '../models';
+import { AuthSession, UserAppState, UserProfile } from '../models';
 
 /**
  * User Context State

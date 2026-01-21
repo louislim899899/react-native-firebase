@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../hooks';
 import { USER_SCREENS } from '../navigation';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 /**
  * Register Screen

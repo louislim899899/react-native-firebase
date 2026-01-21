@@ -1,11 +1,11 @@
 import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  Firestore,
+    doc,
+    Firestore,
+    getDoc,
+    setDoc,
+    updateDoc,
 } from 'firebase/firestore';
-import { db } from '../../../../config/firebase';
+import { getFirebaseDb } from '../../../../config/firebase';
 import { UserSettings } from '../models';
 
 const DEFAULT_SETTINGS: Omit<UserSettings, 'uid' | 'updatedAt'> = {
@@ -25,8 +25,8 @@ const DEFAULT_SETTINGS: Omit<UserSettings, 'uid' | 'updatedAt'> = {
 class SettingsService {
   private dbInstance: Firestore;
 
-  constructor(dbInstance: Firestore) {
-    this.dbInstance = dbInstance;
+  constructor() {
+    this.dbInstance = getFirebaseDb();
   }
 
   /**
@@ -152,4 +152,4 @@ class SettingsService {
 }
 
 // Export singleton instance
-export const settingsService = new SettingsService(db);
+export const settingsService = new SettingsService();

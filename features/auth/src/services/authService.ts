@@ -1,17 +1,16 @@
 import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  sendPasswordResetEmail,
-  signInWithCredential,
-  GoogleAuthProvider,
-  Auth,
-  User,
-  sendEmailVerification,
+    Auth,
+    GoogleAuthProvider,
+    User,
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+    sendPasswordResetEmail,
+    signInWithCredential,
+    signInWithEmailAndPassword,
+    signOut,
 } from 'firebase/auth';
-import { auth } from '../../../../config/firebase';
+import { getFirebaseAuth } from '../../../../config/firebase';
 import { AuthSession } from '../models';
-
 /**
  * Firebase Authentication Service
  *
@@ -23,8 +22,8 @@ import { AuthSession } from '../models';
 class AuthService {
   private authInstance: Auth;
 
-  constructor(authInstance: Auth) {
-    this.authInstance = authInstance;
+  constructor() {
+    this.authInstance = getFirebaseAuth();
   }
 
   /**
@@ -211,4 +210,4 @@ class AuthService {
 }
 
 // Export singleton instance
-export const authService = new AuthService(auth);
+export const authService = new AuthService();

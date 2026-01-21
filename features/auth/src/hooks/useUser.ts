@@ -1,7 +1,6 @@
-import { useState, useCallback } from 'react';
-import { userService } from '../services';
-import { settingsService } from '../services';
+import { useCallback, useState } from 'react';
 import { UserProfile, UserSettings } from '../models';
+import { settingsService, userService } from '../services';
 import { mapFirebaseErrorToMessage } from '../utils';
 
 /**

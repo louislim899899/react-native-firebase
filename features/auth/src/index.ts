@@ -10,27 +10,26 @@ export { UserAppState } from './models';
 export type { AuthSession, UserProfile, UserSettings } from './models';
 
 // Services (if screen developers need direct access)
-export { authService, userService, settingsService } from './services';
+export { authService, settingsService, userService } from './services';
 
 // Hooks (main way to interact with auth feature)
 export { useAuth, useUser, useUserState } from './hooks';
 export type {
-  UseAuthResult,
-  UseUserResult,
-  UseUserStateResult,
+    UseAuthResult,
+    UseUserResult,
+    UseUserStateResult
 } from './hooks';
 
 // Navigation
-export { UserRootNavigator, USER_SCREENS } from './navigation';
+export { USER_SCREENS, UserRootNavigator } from './navigation';
 
 // State & Context
-export { useUserContext } from './state';
+export { UserProvider, useUserContext } from './state';
 export type { UserContextState } from './state';
 
 // Utilities (for app-level use)
 export {
-  mapFirebaseErrorToMessage,
-  hasSeenIntroSlider,
-  markIntroSliderSeen,
-  resetFirstInstallFlag,
+    hasSeenIntroSlider, mapFirebaseErrorToMessage, markIntroSliderSeen,
+    resetFirstInstallFlag
 } from './utils';
+

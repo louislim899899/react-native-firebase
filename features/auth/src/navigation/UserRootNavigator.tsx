@@ -1,19 +1,19 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useEffect, useState } from 'react';
 import { useUserState } from '../hooks';
 import { UserAppState } from '../models';
-import { hasSeenIntroSlider } from '../utils';
-import { useEffect, useState } from 'react';
 import {
-  IntroSliderScreen,
-  LoginScreen,
-  RegisterScreen,
-  ForgotPasswordScreen,
-  VerifyEmailScreen,
-  OnboardingProfileScreen,
-  HomeScreen,
-  ProfileScreen,
-  SettingsScreen,
+    ForgotPasswordScreen,
+    HomeScreen,
+    IntroSliderScreen,
+    LoginScreen,
+    OnboardingProfileScreen,
+    ProfileScreen,
+    RegisterScreen,
+    SettingsScreen,
+    VerifyEmailScreen,
 } from '../screens';
+import { hasSeenIntroSlider } from '../utils';
 
 /**
  * User Root Navigator

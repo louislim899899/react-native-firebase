@@ -1,4 +1,4 @@
-import { AuthSession, UserProfile, UserAppState } from '../models';
+import { AuthSession, UserAppState, UserProfile } from '../models';
 
 /**
  * User State Resolver
