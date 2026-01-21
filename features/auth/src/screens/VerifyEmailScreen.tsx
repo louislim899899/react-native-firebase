@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth, useUserState } from '../hooks';
 
@@ -12,6 +14,7 @@ import { useAuth, useUserState } from '../hooks';
  */
 
 export function VerifyEmailScreen() {
+  const navigation = useNavigation();
   const { sendVerificationEmail, refreshEmailVerificationStatus, isLoading, error } = useAuth();
   const { authSession } = useUserState();
 
@@ -32,7 +35,11 @@ export function VerifyEmailScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>←</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Verify Your Email</Text>
       <Text style={styles.description}>
         We&apos;ve sent a verification link to {authSession.email}
@@ -54,11 +61,15 @@ export function VerifyEmailScreen() {
       >
         <Text style={styles.secondaryButtonText}>Resend Verification Email</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -105,5 +116,18 @@ const styles = StyleSheet.create({
     color: '#ff3333',
     marginBottom: 15,
     textAlign: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    zIndex: 10,
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: '#007AFF',
+    fontWeight: '600',
   },
 });

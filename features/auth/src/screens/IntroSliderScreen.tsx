@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 
 /**
@@ -14,6 +16,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View, Dimensions } from '
 const { width } = Dimensions.get('window');
 
 export function IntroSliderScreen() {
+  const navigation = useNavigation();
   const [currentPage, setCurrentPage] = React.useState(0);
   const flatListRef = React.useRef<FlatList>(null);
 
@@ -77,7 +80,11 @@ export function IntroSliderScreen() {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>←</Text>
+      </TouchableOpacity>
       <FlatList
         ref={flatListRef}
         data={pages}
@@ -88,7 +95,6 @@ export function IntroSliderScreen() {
         scrollEventThrottle={16}
         onScroll={handleScroll}
         showsHorizontalScrollIndicator={false}
-        scrollToIndex={true}
       />
 
       <View style={styles.footer}>
@@ -112,11 +118,16 @@ export function IntroSliderScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -185,6 +196,16 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: '600',
+  },
+  backButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    zIndex: 10,
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: '#007AFF',
     fontWeight: '600',
   },
 });

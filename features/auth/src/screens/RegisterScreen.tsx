@@ -1,4 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../hooks';
 import { USER_SCREENS } from '../navigation';
@@ -13,7 +15,8 @@ import { USER_SCREENS } from '../navigation';
 
 type Props = NativeStackScreenProps<any, typeof USER_SCREENS.Register>;
 
-export function RegisterScreen({ navigation }: Props) {
+export function RegisterScreen({ navigation: screenNavigation }: Props) {
+  const navigation = useNavigation();
   const { register, isLoading, error } = useAuth();
 
   const handleDemoRegister = async () => {
@@ -27,11 +30,15 @@ export function RegisterScreen({ navigation }: Props) {
   };
 
   const handleGoToLogin = () => {
-    navigation.goBack();
+    screenNavigation.goBack();
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>←</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Create Account</Text>
       {error && <Text style={styles.error}>{error}</Text>}
       <TouchableOpacity
@@ -46,11 +53,15 @@ export function RegisterScreen({ navigation }: Props) {
       <TouchableOpacity style={styles.link} onPress={handleGoToLogin}>
         <Text style={styles.linkText}>Already have an account? Login</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -88,5 +99,18 @@ const styles = StyleSheet.create({
     color: '#ff3333',
     marginBottom: 15,
     textAlign: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    zIndex: 10,
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: '#007AFF',
+    fontWeight: '600',
   },
 });
