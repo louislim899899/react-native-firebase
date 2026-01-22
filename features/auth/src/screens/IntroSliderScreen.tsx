@@ -1,6 +1,8 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ScreenLayout } from '../components';
+import { USER_SCREENS } from '../navigation';
 import { markIntroSliderSeen } from '../utils';
 
 /**
@@ -13,9 +15,11 @@ import { markIntroSliderSeen } from '../utils';
  * @see specs/user/current/module_user_v2_FINAL.md
  */
 
+type Props = NativeStackScreenProps<any, typeof USER_SCREENS.IntroSlider>;
+
 const { width } = Dimensions.get('window');
 
-export function IntroSliderScreen() {
+export function IntroSliderScreen({ navigation }: Props) {
   const [currentPage, setCurrentPage] = React.useState(0);
   const flatListRef = React.useRef<FlatList>(null);
 
@@ -58,7 +62,8 @@ export function IntroSliderScreen() {
   const handleComplete = async () => {
     try {
       await markIntroSliderSeen();
-      // UserRootNavigator automatically switches to AuthStack when intro is marked as seen
+      // Navigate to login screen like LoginScreen does
+      navigation.navigate(USER_SCREENS.Login as never);
     } catch (error) {
       console.error('Error marking intro slider as seen:', error);
     }

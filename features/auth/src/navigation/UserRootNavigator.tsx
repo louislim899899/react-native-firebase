@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { useUserState } from '../hooks';
 import { UserAppState } from '../models';
 import {
@@ -59,6 +60,10 @@ function IntroStack() {
       <Stack.Screen
         name={USER_SCREENS.IntroSlider}
         component={IntroSliderScreen}
+      />
+      <Stack.Screen
+        name={USER_SCREENS.Login}
+        component={LoginScreen}
       />
     </Stack.Navigator>
   );
@@ -166,6 +171,8 @@ function MainStack() {
 export function UserRootNavigator() {
   const { userAppState, isLoading } = useUserState();
   const [hasSeenIntro, setHasSeenIntro] = useState<boolean | null>(null);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   // Check first install on mount
   useEffect(() => {
@@ -173,6 +180,22 @@ export function UserRootNavigator() {
       .then((seen) => setHasSeenIntro(seen))
       .catch(() => setHasSeenIntro(true)); // Assume seen on error
   }, []);
+
+  // Listen for app state changes and re-check intro flag
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, []);
+
+  const handleAppStateChange = async (nextAppState: AppStateStatus) => {
+    // When app comes to foreground, re-check intro flag
+    if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+      const seen = await hasSeenIntroSlider();
+      setHasSeenIntro(seen);
+    }
+    appState.current = nextAppState;
+    setAppStateVisible(nextAppState);
+  };
 
   // Show loading state while determining current state
   if (isLoading || hasSeenIntro === null) {

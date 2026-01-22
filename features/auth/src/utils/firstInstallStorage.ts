@@ -25,7 +25,7 @@ const FIRST_INSTALL_KEY = 'app_first_install_done';
 export async function hasSeenIntroSlider(): Promise<boolean> {
   try {
     const value = await SecureStore.getItemAsync(FIRST_INSTALL_KEY);
-    return value === 'true';
+    return value === 'false';
   } catch (error) {
     console.warn('Failed to read first install flag', error);
     // On error, assume not seen to show intro
@@ -57,6 +57,7 @@ export async function markIntroSliderSeen(): Promise<void> {
 export async function resetFirstInstallFlag(): Promise<void> {
   try {
     await SecureStore.deleteItemAsync(FIRST_INSTALL_KEY);
+    console.log('First install flag reset - intro slider will show on next app restart');
   } catch (error) {
     console.warn('Failed to reset first install flag', error);
   }
