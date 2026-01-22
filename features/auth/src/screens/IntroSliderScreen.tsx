@@ -1,7 +1,7 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
+import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScreenLayout } from '../components';
+import { markIntroSliderSeen } from '../utils';
 
 /**
  * Intro Slider Screen
@@ -16,7 +16,6 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View, Dimensions } from '
 const { width } = Dimensions.get('window');
 
 export function IntroSliderScreen() {
-  const navigation = useNavigation();
   const [currentPage, setCurrentPage] = React.useState(0);
   const flatListRef = React.useRef<FlatList>(null);
 
@@ -46,7 +45,6 @@ export function IntroSliderScreen() {
   const handleNext = () => {
     if (currentPage < pages.length - 1) {
       const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
       flatListRef.current?.scrollToIndex({ index: nextPage, animated: true });
     } else {
       handleComplete();
@@ -58,9 +56,12 @@ export function IntroSliderScreen() {
   };
 
   const handleComplete = async () => {
-    // Mark intro as seen and navigation will update automatically
-    const { markIntroSliderSeen } = await import('../utils');
-    await markIntroSliderSeen();
+    try {
+      await markIntroSliderSeen();
+      // UserRootNavigator automatically switches to AuthStack when intro is marked as seen
+    } catch (error) {
+      console.error('Error marking intro slider as seen:', error);
+    }
   };
 
   const handleScroll = (event: any) => {
@@ -80,11 +81,7 @@ export function IntroSliderScreen() {
 
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>←</Text>
-      </TouchableOpacity>
+    <ScreenLayout showBackButton={false} containerStyle={styles.layoutContainer}>
       <FlatList
         ref={flatListRef}
         data={pages}
@@ -118,14 +115,16 @@ export function IntroSliderScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: '#fff',
+  },
+  layoutContainer: {
     backgroundColor: '#fff',
   },
   container: {
@@ -177,6 +176,8 @@ const styles = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
   },
   skipButton: {
     paddingVertical: 12,
@@ -196,16 +197,6 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  backButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    zIndex: 10,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#007AFF',
     fontWeight: '600',
   },
 });

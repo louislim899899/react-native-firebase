@@ -1,8 +1,9 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScreenLayout } from '../components';
 import { useAuth, useUserState } from '../hooks';
+import { USER_SCREENS } from '../navigation';
 
 /**
  * Home Screen
@@ -12,40 +13,36 @@ import { useAuth, useUserState } from '../hooks';
  * @see specs/user/current/technical_architecture.md
  */
 
-export function HomeScreen() {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<any, typeof USER_SCREENS.Home>;
+
+export function HomeScreen({ navigation }: Props) {
   const { logout } = useAuth();
   const { userProfile } = useUserState();
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>←</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Welcome Home</Text>
-      {userProfile && (
-        <Text style={styles.greeting}>
-          Hello, {userProfile.firstName} {userProfile.lastName}!
-        </Text>
-      )}
-      <TouchableOpacity style={styles.button} onPress={logout}>
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
+    <ScreenLayout containerStyle={styles.layoutContainer}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Welcome Home</Text>
+        {userProfile && (
+          <Text style={styles.greeting}>
+            Hello, {userProfile.firstName} {userProfile.lastName}!
+          </Text>
+        )}
+        <TouchableOpacity style={styles.button} onPress={logout}>
+          <Text style={styles.buttonText}>Logout</Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  layoutContainer: {
     paddingHorizontal: 20,
+  },
+  content: {
+    alignItems: 'center',
+    paddingVertical: 40,
   },
   title: {
     fontSize: 24,
@@ -66,19 +63,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    zIndex: 10,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#007AFF',
     fontWeight: '600',
   },
 });

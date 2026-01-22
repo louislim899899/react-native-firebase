@@ -1,7 +1,8 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { ScreenLayout } from '../components';
+import { USER_SCREENS } from '../navigation';
 
 /**
  * Settings Screen
@@ -11,29 +12,26 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
  * @see specs/user/current/module_user_v2_FINAL.md
  */
 
-export function SettingsScreen() {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<any, typeof USER_SCREENS.Settings>;
+
+export function SettingsScreen({ navigation }: Props) {
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>←</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Settings</Text>
-      <Text style={styles.placeholder}>Settings content coming soon</Text>
+    <ScreenLayout showBackButton={false} containerStyle={styles.layoutContainer}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Settings</Text>
+        <Text style={styles.placeholder}>Settings content coming soon</Text>
       </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  layoutContainer: {
+    paddingHorizontal: 20,
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  content: {
     alignItems: 'center',
+    paddingVertical: 40,
   },
   title: {
     fontSize: 24,
@@ -43,18 +41,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999',
     marginTop: 10,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    zIndex: 10,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#007AFF',
-    fontWeight: '600',
   },
 });

@@ -1,7 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScreenLayout } from '../components';
 import { useAuth } from '../hooks';
 import { USER_SCREENS } from '../navigation';
 
@@ -9,20 +9,52 @@ import { USER_SCREENS } from '../navigation';
  * Register Screen
  *
  * Allows users to create a new account with email and password.
+ * Can be pre-filled with email from login screen.
  *
  * @see specs/user/current/module_user_v2_FINAL.md
  */
 
 type Props = NativeStackScreenProps<any, typeof USER_SCREENS.Register>;
 
-export function RegisterScreen({ navigation: screenNavigation }: Props) {
-  const navigation = useNavigation();
+export function RegisterScreen({ navigation, route }: Props) {
   const { register, isLoading, error } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const handleDemoRegister = async () => {
+  // Pre-fill email if passed from login screen
+  useEffect(() => {
+    if (route.params?.email) {
+      setEmail(route.params.email);
+    }
+  }, [route.params?.email]);
+
+  const handleRegister = async () => {
+    setPasswordError(null);
+
+    if (!email.trim()) {
+      setPasswordError('Please enter an email');
+      return;
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Please enter a password');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      return;
+    }
+
     try {
-      const timestamp = Date.now();
-      await register(`demo${timestamp}@example.com`, 'password123');
+      await register(email, password);
       // Navigation handled automatically by useUserState
     } catch {
       // Error is already captured in the hook
@@ -30,41 +62,65 @@ export function RegisterScreen({ navigation: screenNavigation }: Props) {
   };
 
   const handleGoToLogin = () => {
-    screenNavigation.goBack();
+    navigation.goBack();
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>←</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Create Account</Text>
-      {error && <Text style={styles.error}>{error}</Text>}
-      <TouchableOpacity
-        style={[styles.button, isLoading && styles.disabledButton]}
-        onPress={handleDemoRegister}
-        disabled={isLoading}
-      >
-        <Text style={styles.buttonText}>
-          {isLoading ? 'Creating account...' : 'Register (Demo)'}
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.link} onPress={handleGoToLogin}>
-        <Text style={styles.linkText}>Already have an account? Login</Text>
-      </TouchableOpacity>
+    <ScreenLayout containerStyle={styles.layoutContainer}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Create Account</Text>
+        {error && <Text style={styles.error}>{error}</Text>}
+        {passwordError && <Text style={styles.error}>{passwordError}</Text>}
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          editable={!isLoading}
+          placeholderTextColor="#999"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          editable={!isLoading}
+          secureTextEntry
+          placeholderTextColor="#999"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          editable={!isLoading}
+          secureTextEntry
+          placeholderTextColor="#999"
+        />
+        <TouchableOpacity
+          style={[styles.button, isLoading && styles.disabledButton]}
+          onPress={handleRegister}
+          disabled={isLoading}
+        >
+          <Text style={styles.buttonText}>
+            {isLoading ? 'Creating account...' : 'Register'}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.link} onPress={handleGoToLogin} disabled={isLoading}>
+          <Text style={styles.linkText}>Already have an account? Login</Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  layoutContainer: {
+    paddingHorizontal: 20,
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  content: {
     alignItems: 'center',
     paddingHorizontal: 20,
   },
@@ -73,12 +129,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    marginBottom: 12,
+    fontSize: 16,
+  },
   button: {
     backgroundColor: '#007AFF',
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 8,
     marginVertical: 10,
+    width: '100%',
+    alignItems: 'center',
   },
   disabledButton: {
     opacity: 0.5,
@@ -99,18 +167,5 @@ const styles = StyleSheet.create({
     color: '#ff3333',
     marginBottom: 15,
     textAlign: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    zIndex: 10,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#007AFF',
-    fontWeight: '600',
   },
 });

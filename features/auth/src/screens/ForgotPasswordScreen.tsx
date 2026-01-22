@@ -1,8 +1,9 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScreenLayout } from '../components';
 import { useAuth } from '../hooks';
+import { USER_SCREENS } from '../navigation';
 
 /**
  * Forgot Password Screen
@@ -12,8 +13,9 @@ import { useAuth } from '../hooks';
  * @see specs/user/current/module_user_v2_FINAL.md
  */
 
-export function ForgotPasswordScreen() {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<any, typeof USER_SCREENS.ForgotPassword>;
+
+export function ForgotPasswordScreen({ navigation }: Props) {
   const { sendPasswordReset, isLoading, error } = useAuth();
   const [email, setEmail] = React.useState('');
   const [success, setSuccess] = React.useState(false);
@@ -29,59 +31,59 @@ export function ForgotPasswordScreen() {
 
   if (success) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        <View style={styles.container}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.successTitle}>Check your email</Text>
-        <Text style={styles.successText}>
-          We&apos;ve sent a password reset link to {email}
-        </Text>
+      <ScreenLayout containerStyle={styles.layoutContainer}>
+        <View style={styles.content}>
+          <Text style={styles.successTitle}>Check your email</Text>
+          <Text style={styles.successText}>
+            We&apos;ve sent a password reset link to {email}
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.buttonText}>Back to Login</Text>
+          </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>←</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Reset Password</Text>
-      {error && <Text style={styles.error}>{error}</Text>}
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        value={email}
-        onChangeText={setEmail}
-        editable={!isLoading}
-        placeholderTextColor="#999"
-      />
-      <TouchableOpacity
-        style={[styles.button, isLoading && styles.disabledButton]}
-        onPress={handleSendReset}
-        disabled={isLoading}
-      >
-        <Text style={styles.buttonText}>
-          {isLoading ? 'Sending...' : 'Send Reset Email'}
-        </Text>
-      </TouchableOpacity>
+    <ScreenLayout showBackButton={true} containerStyle={styles.layoutContainer}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Reset Password</Text>
+        {error && <Text style={styles.error}>{error}</Text>}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          value={email}
+          onChangeText={setEmail}
+          editable={!isLoading}
+          placeholderTextColor="#999"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity
+          style={[styles.button, !email || isLoading ? styles.disabledButton : {}]}
+          onPress={handleSendReset}
+          disabled={!email || isLoading}
+        >
+          <Text style={styles.buttonText}>
+            {isLoading ? 'Sending...' : 'Send Reset Link'}
+          </Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  layoutContainer: {
     paddingHorizontal: 20,
+  },
+  content: {
+    alignItems: 'center',
+    paddingVertical: 40,
   },
   title: {
     fontSize: 24,
@@ -98,15 +100,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: '#666',
+    marginBottom: 20,
   },
   input: {
     width: '100%',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    paddingVertical: 12,
     paddingHorizontal: 15,
-    marginVertical: 10,
+    paddingVertical: 12,
+    marginBottom: 12,
     fontSize: 16,
   },
   button: {
@@ -114,6 +117,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 8,
+    marginVertical: 10,
+    width: '100%',
+    alignItems: 'center',
   },
   disabledButton: {
     opacity: 0.5,
@@ -127,18 +133,5 @@ const styles = StyleSheet.create({
     color: '#ff3333',
     marginBottom: 15,
     textAlign: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    zIndex: 10,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#007AFF',
-    fontWeight: '600',
   },
 });

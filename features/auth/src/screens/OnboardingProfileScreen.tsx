@@ -1,8 +1,9 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScreenLayout } from '../components';
 import { useUser, useUserState } from '../hooks';
+import { USER_SCREENS } from '../navigation';
 
 /**
  * Onboarding Profile Screen
@@ -13,8 +14,9 @@ import { useUser, useUserState } from '../hooks';
  * @see specs/user/current/module_user_v2_FINAL.md
  */
 
-export function OnboardingProfileScreen() {
-  const navigation = useNavigation();
+type Props = NativeStackScreenProps<any, typeof USER_SCREENS.OnboardingProfile>;
+
+export function OnboardingProfileScreen({ navigation }: Props) {
   const { completeOnboarding, isLoading, error } = useUser();
   const { authSession } = useUserState();
   const [firstName, setFirstName] = useState('');
@@ -34,61 +36,56 @@ export function OnboardingProfileScreen() {
   const isValid = firstName.trim() && lastName.trim();
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>←</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Complete Your Profile</Text>
-      <Text style={styles.description}>Tell us a bit about yourself</Text>
+    <ScreenLayout containerStyle={styles.layoutContainer}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Complete Your Profile</Text>
+        <Text style={styles.description}>Tell us a bit about yourself</Text>
 
-      {error && <Text style={styles.error}>{error}</Text>}
+        {error && <Text style={styles.error}>{error}</Text>}
 
-      <TextInput
-        style={styles.input}
-        placeholder="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-        editable={!isLoading}
-        placeholderTextColor="#999"
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="First Name"
+          value={firstName}
+          onChangeText={setFirstName}
+          editable={!isLoading}
+          placeholderTextColor="#999"
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Last Name"
-        value={lastName}
-        onChangeText={setLastName}
-        editable={!isLoading}
-        placeholderTextColor="#999"
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Last Name"
+          value={lastName}
+          onChangeText={setLastName}
+          editable={!isLoading}
+          placeholderTextColor="#999"
+        />
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          !isValid && styles.disabledButton,
-          isLoading && styles.disabledButton,
-        ]}
-        onPress={handleCompleteOnboarding}
-        disabled={!isValid || isLoading}
-      >
-        <Text style={styles.buttonText}>
-          {isLoading ? 'Completing...' : 'Continue'}
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            !isValid && styles.disabledButton,
+            isLoading && styles.disabledButton,
+          ]}
+          onPress={handleCompleteOnboarding}
+          disabled={!isValid || isLoading}
+        >
+          <Text style={styles.buttonText}>
+            {isLoading ? 'Completing...' : 'Continue'}
+          </Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  layoutContainer: {
     paddingHorizontal: 20,
+  },
+  content: {
+    alignItems: 'center',
+    paddingVertical: 40,
   },
   title: {
     fontSize: 24,
@@ -131,18 +128,5 @@ const styles = StyleSheet.create({
     color: '#ff3333',
     marginBottom: 15,
     textAlign: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    zIndex: 10,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#007AFF',
-    fontWeight: '600',
   },
 });
