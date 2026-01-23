@@ -2,8 +2,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ScreenLayout } from '../components';
+import { useIntro } from '../context/IntroContext';
 import { USER_SCREENS } from '../navigation';
-import { markIntroSliderSeen } from '../utils';
 
 /**
  * Intro Slider Screen
@@ -22,6 +22,7 @@ const { width } = Dimensions.get('window');
 export function IntroSliderScreen({ navigation }: Props) {
   const [currentPage, setCurrentPage] = React.useState(0);
   const flatListRef = React.useRef<FlatList>(null);
+  const { completeIntro } = useIntro();
 
   const pages = [
     {
@@ -61,9 +62,7 @@ export function IntroSliderScreen({ navigation }: Props) {
 
   const handleComplete = async () => {
     try {
-      await markIntroSliderSeen();
-      // Navigate to login screen like LoginScreen does
-      navigation.navigate(USER_SCREENS.Login as never);
+      await completeIntro();
     } catch (error) {
       console.error('Error marking intro slider as seen:', error);
     }

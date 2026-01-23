@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth';
 import { getFirebaseAuth } from '../../../../config/firebase';
 import { AuthSession } from '../models';
+import { userService } from './index';
 /**
  * Firebase Authentication Service
  *
@@ -62,6 +63,7 @@ class AuthService {
    *
    * Side effects:
    * - Creates new user in Firebase Auth
+   * - Creates user profile in Firestore
    * - Sends verification email
    */
   async register(email: string, password: string): Promise<AuthSession> {
@@ -71,10 +73,21 @@ class AuthService {
       password
     );
 
+    const user = userCredential.user;
+
+    // Create user profile in Firestore
+    try {
+      await userService.createUserProfile(user.uid, email);
+    } catch (error) {
+      console.error('Failed to create user profile:', error);
+      // Don't throw - user is already created in Auth
+      // They can complete profile later
+    }
+
     // Send verification email
     await this.sendVerificationEmail();
 
-    return this.firebaseUserToSession(userCredential.user);
+    return this.firebaseUserToSession(user);
   }
 
   /**
@@ -108,6 +121,7 @@ class AuthService {
    *
    * Side effects:
    * - Authenticates user with Google provider
+   * - Creates user profile in Firestore if doesn't exist
    * - Skips email verification for trusted provider
    */
   async loginWithGoogle(idToken: string): Promise<AuthSession> {
@@ -117,7 +131,20 @@ class AuthService {
       credential
     );
 
-    return this.firebaseUserToSession(userCredential.user);
+    const user = userCredential.user;
+
+    // Create user profile if it doesn't exist (for new users)
+    try {
+      const existingProfile = await userService.fetchUserProfile(user.uid);
+      if (!existingProfile) {
+        await userService.createUserProfile(user.uid, user.email || '');
+      }
+    } catch (error) {
+      console.error('Failed to create user profile:', error);
+      // Don't throw - user is already created in Auth
+    }
+
+    return this.firebaseUserToSession(user);
   }
 
   /**

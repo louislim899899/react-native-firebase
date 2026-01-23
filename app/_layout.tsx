@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { UserProvider, UserRootNavigator } from '@/features/auth/src';
+import { IntroProvider } from '@/features/auth/src/context/IntroContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useEffect } from 'react';
 
@@ -33,7 +34,9 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StatusBar style="dark" />
       <UserProvider>
-        <UserRootNavigator />
+        <IntroProvider>
+          <UserRootNavigator />
+        </IntroProvider>
       </UserProvider>
       <StatusBar style="auto" />
     </ThemeProvider>

@@ -11,6 +11,8 @@ import { USER_SCREENS } from '../navigation';
  * Allows users to create a new account with email and password.
  * Can be pre-filled with email from login screen.
  *
+ * Navigation is handled automatically by state changes - no manual navigation.
+ *
  * @see specs/user/current/module_user_v2_FINAL.md
  */
 
@@ -55,7 +57,7 @@ export function RegisterScreen({ navigation, route }: Props) {
 
     try {
       await register(email, password);
-      // Navigation handled automatically by useUserState
+      // Navigation handled automatically by state change in UserRootNavigator
     } catch {
       // Error is already captured in the hook
     }

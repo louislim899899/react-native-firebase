@@ -1,20 +1,20 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useEffect, useRef, useState } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { useRef } from 'react';
+import { AppState } from 'react-native';
+import { useIntro } from '../context/IntroContext';
 import { useUserState } from '../hooks';
 import { UserAppState } from '../models';
 import {
-    ForgotPasswordScreen,
-    HomeScreen,
-    IntroSliderScreen,
-    LoginScreen,
-    OnboardingProfileScreen,
-    ProfileScreen,
-    RegisterScreen,
-    SettingsScreen,
-    VerifyEmailScreen,
+  ForgotPasswordScreen,
+  HomeScreen,
+  IntroSliderScreen,
+  LoginScreen,
+  OnboardingProfileScreen,
+  ProfileScreen,
+  RegisterScreen,
+  SettingsScreen,
+  VerifyEmailScreen,
 } from '../screens';
-import { hasSeenIntroSlider } from '../utils';
 
 /**
  * User Root Navigator
@@ -70,14 +70,16 @@ function IntroStack() {
 }
 
 /**
- * Auth Stack - For guest users
+ * Auth Stack - For guest users and users with unverified email
+ * Uses initialRouteName to show the correct screen based on user state
  */
-function AuthStack() {
+function AuthStack({ initialRoute }: { initialRoute: string }) {
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}
+      initialRouteName={initialRoute}
     >
       <Stack.Screen
         name={USER_SCREENS.Login}
@@ -90,6 +92,10 @@ function AuthStack() {
       <Stack.Screen
         name={USER_SCREENS.ForgotPassword}
         component={ForgotPasswordScreen}
+      />
+      <Stack.Screen
+        name={USER_SCREENS.VerifyEmail}
+        component={VerifyEmailScreen}
       />
     </Stack.Navigator>
   );
@@ -161,41 +167,19 @@ function MainStack() {
  * Root Navigator for User Feature
  *
  * Routes users based on their state.
+ * Uses initialRouteName to show the correct screen based on current state.
+ *
  * Order of checks:
  * 1. First install? → IntroStack
- * 2. Guest? → AuthStack
- * 3. Unverified? → VerificationStack
+ * 2. Guest? → AuthStack (starts at Login)
+ * 3. Unverified? → AuthStack (starts at VerifyEmail)
  * 4. Not onboarded? → OnboardingStack
  * 5. Otherwise → MainStack
  */
 export function UserRootNavigator() {
   const { userAppState, isLoading } = useUserState();
-  const [hasSeenIntro, setHasSeenIntro] = useState<boolean | null>(null);
+  const { hasSeenIntro } = useIntro();
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
-
-  // Check first install on mount
-  useEffect(() => {
-    hasSeenIntroSlider()
-      .then((seen) => setHasSeenIntro(seen))
-      .catch(() => setHasSeenIntro(true)); // Assume seen on error
-  }, []);
-
-  // Listen for app state changes and re-check intro flag
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    return () => subscription.remove();
-  }, []);
-
-  const handleAppStateChange = async (nextAppState: AppStateStatus) => {
-    // When app comes to foreground, re-check intro flag
-    if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-      const seen = await hasSeenIntroSlider();
-      setHasSeenIntro(seen);
-    }
-    appState.current = nextAppState;
-    setAppStateVisible(nextAppState);
-  };
 
   // Show loading state while determining current state
   if (isLoading || hasSeenIntro === null) {
@@ -207,12 +191,14 @@ export function UserRootNavigator() {
     return <IntroStack />;
   }
 
+  console.log('UserAppState:', userAppState);
+
   switch (userAppState) {
     case UserAppState.GUEST:
-      return <AuthStack />;
+      return <AuthStack initialRoute={USER_SCREENS.Login} />;
 
     case UserAppState.AUTHENTICATED_UNVERIFIED:
-      return <VerificationStack />;
+      return <AuthStack initialRoute={USER_SCREENS.VerifyEmail} />;
 
     case UserAppState.VERIFIED_NOT_ONBOARDED:
       return <OnboardingStack />;

@@ -22,7 +22,7 @@ interface ScreenLayoutProps {
 
 export function ScreenLayout({
   children,
-  showBackButton = true,
+  showBackButton = false,
   containerStyle,
 }: ScreenLayoutProps) {
   const navigation = useNavigation();
